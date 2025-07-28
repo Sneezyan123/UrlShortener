@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrlShortener", "UrlShortener\UrlShortener.csproj", "{9A47CDC5-ABAA-472A-BB7E-745538A6B936}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrlShortener.Infrastructure", "UrlShortener.Infrastructure\UrlShortener.Infrastructure.csproj", "{E4A92575-6B52-460F-8DF9-6C772DDFDDC1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrlShortener.Application", "UrlShortener.Application\UrlShortener.Application.csproj", "{31C9D0A8-D225-425C-A35F-C72861B98586}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrlShortener.Domain", "UrlShortener.Domain\UrlShortener.Domain.csproj", "{2D600CFA-35AF-4A16-A4EC-CAB2D08BEE9A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9A47CDC5-ABAA-472A-BB7E-745538A6B936}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A47CDC5-ABAA-472A-BB7E-745538A6B936}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A47CDC5-ABAA-472A-BB7E-745538A6B936}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A47CDC5-ABAA-472A-BB7E-745538A6B936}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4A92575-6B52-460F-8DF9-6C772DDFDDC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4A92575-6B52-460F-8DF9-6C772DDFDDC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4A92575-6B52-460F-8DF9-6C772DDFDDC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4A92575-6B52-460F-8DF9-6C772DDFDDC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31C9D0A8-D225-425C-A35F-C72861B98586}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31C9D0A8-D225-425C-A35F-C72861B98586}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31C9D0A8-D225-425C-A35F-C72861B98586}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31C9D0A8-D225-425C-A35F-C72861B98586}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D600CFA-35AF-4A16-A4EC-CAB2D08BEE9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D600CFA-35AF-4A16-A4EC-CAB2D08BEE9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D600CFA-35AF-4A16-A4EC-CAB2D08BEE9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D600CFA-35AF-4A16-A4EC-CAB2D08BEE9A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
