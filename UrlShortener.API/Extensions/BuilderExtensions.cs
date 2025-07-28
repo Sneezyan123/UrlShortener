@@ -33,6 +33,7 @@ public static class BuilderExtensions
         );
         builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
+        builder.Services.AddScoped<IShortenedUrlRepository, ShortenedUrlRepository>();
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
         builder.Services.AddValidatorsFromAssembly(AssemblyInfrastructureReference.Assembly);
         builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));

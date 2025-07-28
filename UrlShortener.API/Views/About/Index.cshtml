@@ -6,11 +6,11 @@
     <h1>@ViewData["Title"]</h1>
 
     <div class="about-content">
-        <h2>How Our URL Shortener Works</h2>
+        <h2>How URL Shortener Works</h2>
         
         <p>Our URL shortener service uses a Base62 encoding algorithm to generate short, unique URLs. Here's how it works:</p>
         
-        <h3>1. Base62 Encoding</h3>
+        <h3>1Encoding</h3>
         <p>We use Base62 encoding (using characters A-Z, a-z, and 0-9) because:</p>
         <ul>
             <li>It's URL-safe (no special characters)</li>
@@ -18,20 +18,5 @@
             <li>It's human-readable and easy to share</li>
         </ul>
 
-        <h3>2. Collision Detection</h3>
-        <p>To ensure uniqueness, our system:</p>
-        <ul>
-            <li>Checks if the generated short code already exists</li>
-            <li>If a collision is detected, generates a new code</li>
-            <li>Uses a counter to ensure unique codes even with identical input URLs</li>
-        </ul>
-
-        <h3>3. Performance Optimization</h3>
-        <p>For optimal performance, we:</p>
-        <ul>
-            <li>Cache frequently accessed URLs</li>
-            <li>Use efficient database indexing</li>
-            <li>Implement rate limiting to prevent abuse</li>
-        </ul>
     </div>
 </div>

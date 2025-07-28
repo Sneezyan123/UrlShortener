@@ -4,12 +4,25 @@
     <button class="btn btn-nav" (click)="navigateToAbout()">About</button>
   </div>
   <div class="auth-buttons">
-    <button class="btn btn-outline" (click)="onSignIn()">Sign In</button>
-    <button class="btn btn-primary" (click)="onSignUp()">Sign Up</button>
+    @if (currentUser.isAuthenticated) {
+      <span class="welcome-text">Welcome, {{ currentUser.userName }}!</span>
+      <button class="btn btn-outline" (click)="onSignOut()">Sign Out</button>
+    } @else {
+      <button class="btn btn-outline" (click)="onSignIn()">Sign In</button>
+      <button class="btn btn-primary" (click)="onSignUp()">Sign Up</button>
+    }
   </div>
 </header>
 
 <main class="main-content">
+  <!-- Success Message -->
+  @if (successMessage) {
+    <div class="success-message">
+      <span>{{ successMessage }}</span>
+      <button class="close-btn" (click)="clearSuccess()">×</button>
+    </div>
+  }
+
   <!-- Error Message -->
   @if (errorMessage) {
     <div class="error-message">
@@ -31,7 +44,8 @@
     <button 
       class="btn btn-primary" 
       (click)="shortenUrl()"
-      [disabled]="isLoading || !urlToShorten.trim()"
+      [disabled]="isLoading || !urlToShorten.trim() || !currentUser.isAuthenticated"
+      [title]="!currentUser.isAuthenticated ? 'Please sign in to shorten URLs' : ''"
     >
       @if (isLoading) {
         <span class="loading-spinner"></span>
@@ -40,10 +54,27 @@
     </button>
   </div>
 
+  <!-- Authentication Notice -->
+  @if (!currentUser.isAuthenticated) {
+    <div class="auth-notice">
+      <p>
+        <strong>Sign in required:</strong> 
+        You need to <a href="/user/login" class="auth-link">sign in</a> to shorten URLs. 
+        Don't have an account? <a href="/user/register" class="auth-link">Register here</a>.
+      </p>
+    </div>
+  }
+
   <!-- History Section -->
   <section class="history-section">
     <div class="history-header">
-      <h2 class="history-title">Recently Shortened URLs</h2>
+      <h2 class="history-title">
+        @if (currentUser.isAuthenticated) {
+          Your Shortened URLs
+        } @else {
+          Recently Shortened URLs
+        }
+      </h2>
       @if (isLoading && !shortenedUrls.length) {
         <div class="loading-indicator">Loading...</div>
       }
@@ -61,15 +92,28 @@
                 Created: {{ item.createdAt | date:'short' }}
               </small>
             </div>
-            <a [href]="item.shortUrl" class="shortened-url" target="_blank" rel="noopener noreferrer">
-              {{ item.shortUrl }}
-            </a>
+            <div class="shortened-url-container">
+              <a [href]="item.shortUrl" class="shortened-url" target="_blank" rel="noopener noreferrer">
+                {{ item.shortUrl }}
+              </a>
+              <button 
+                class="btn btn-copy" 
+                (click)="copyToClipboard(item.shortUrl)"
+                title="Copy to clipboard"
+              >
+                📋
+              </button>
+            </div>
           </li>
         }
       </ul>
     } @else if (!isLoading) {
       <div class="empty-state">
-        <p>No shortened URLs yet. Create your first one above!</p>
+        @if (currentUser.isAuthenticated) {
+          <p>No shortened URLs yet. Create your first one above!</p>
+        } @else {
+          <p>Sign in to see your shortened URLs or view recent public URLs.</p>
+        }
       </div>
     }
   </section>

@@ -9,6 +9,7 @@ builder
     .AddExceptionHandlers()
     .AddServices()
     .AddEfCoreDatabase()
+    .AddDapper()
     .AddAuth();
 var app = builder.Build();
 

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { UrlHistory, ShortenUrlRequest } from '../models/url-history.model';
 
 @Injectable({
@@ -12,10 +13,27 @@ export class UrlService {
   constructor(private http: HttpClient) {}
 
   getUrlHistory(): Observable<UrlHistory[]> {
-    return this.http.get<UrlHistory[]>(`${this.apiUrl}/history`);
+    return this.http.get<UrlHistory[]>(`${this.apiUrl}/history`)
+      .pipe(
+        catchError(this.handleError)
+      );
   }
 
   shortenUrl(request: ShortenUrlRequest): Observable<UrlHistory> {
-    return this.http.post<UrlHistory>(`${this.apiUrl}/shorten`, request);
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+
+    return this.http.post<UrlHistory>(`${this.apiUrl}/shorten`, {
+      originalUrl: request.url
+    }, { headers })
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  private handleError(error: any): Observable<never> {
+    console.error('API Error:', error);
+    return throwError(() => error);
   }
 }

@@ -51,7 +51,6 @@ namespace UrlShortener.Web.Controllers
                 return View(request);
             }
 
-            // Optionally auto-login after registration
             TempData["SuccessMessage"] = "Registration successful! Please log in.";
             return RedirectToAction(nameof(Login));
         }
@@ -94,7 +93,7 @@ namespace UrlShortener.Web.Controllers
             {
                 new Claim(ClaimTypes.NameIdentifier, result.Value.Value.ToString()),
                 new Claim(ClaimTypes.Name, model.Username),
-                new Claim(ClaimTypes.Email, model.Username) // Assuming username is email
+                new Claim(ClaimTypes.Email, model.Username)
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, "CookieAuth");
@@ -124,6 +123,21 @@ namespace UrlShortener.Web.Controllers
         public IActionResult AccessDenied()
         {
             return View();
+        }
+        [HttpGet("/api/auth/status")]
+        public IActionResult GetAuthStatus()
+        {
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                return Ok(new
+                {
+                    IsAuthenticated = true,
+                    UserName = User.Identity.Name,
+                    Email = User.FindFirstValue(ClaimTypes.Email)
+                });
+            }
+
+            return Ok(new { IsAuthenticated = false });
         }
     }
 }
