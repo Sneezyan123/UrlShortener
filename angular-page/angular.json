@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath":"../UrlShortener/wwwroot/angular-page",
+            "outputPath":"../UrlShortener.API/wwwroot/angular-page",
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",

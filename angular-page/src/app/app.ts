@@ -54,8 +54,7 @@ export class App {
   }
 
   onSignIn() {
-    // TODO: Implement sign in functionality
-    console.log('Sign in clicked');
+    window.location.href = '/user/login';
   }
 
   onSignUp() {

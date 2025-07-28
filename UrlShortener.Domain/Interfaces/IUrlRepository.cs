@@ -14,6 +14,6 @@ namespace UrlShortener.Domain.Interfaces
         Task<ShortenedUrl> AddAsync(ShortenedUrl url);
         Task UpdateAsync(ShortenedUrl url);
         Task DeleteAsync(Guid id);
-        Task<IEnumerable<ShortenedUrl>> GetByUserIdAsync(string userId);
+        // Task<IEnumerable<ShortenedUrl>> GetByUserIdAsync(string userId);
     }
 }
