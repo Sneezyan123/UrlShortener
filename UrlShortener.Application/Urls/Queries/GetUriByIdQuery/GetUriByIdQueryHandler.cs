@@ -18,7 +18,7 @@ public class GetUriByIdQueryHandler: IQueryHandler<GetUriByIdQuery, GetUrlDto>
     public async Task<Result<GetUrlDto>> Handle(GetUriByIdQuery request, CancellationToken cancellationToken)
     {
         var query = """
-                    SELECT urls."Id", urls."OriginalUrl", urls."ShortCode", urls."CreatedAt"
+                    SELECT urls."ShortenedUrlId", urls."OriginalUrl", urls."ShortCode", urls."CreatedAt"
                     from public."ShortenUrls" as urls
                     where urls."Id" = @ShortenUrlId;
                     """;

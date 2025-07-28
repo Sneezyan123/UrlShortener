@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using UrlShortener.Infrastructure;
@@ -12,9 +13,11 @@ using UrlShortener.Infrastructure;
 namespace UrlShortener.Infrastructure.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250728102701_urls-updated")]
+    partial class urlsupdated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,7 +28,7 @@ namespace UrlShortener.Infrastructure.Migrations
 
             modelBuilder.Entity("UrlShortener.Domain.Entities.ShortenedUrl", b =>
                 {
-                    b.Property<Guid>("ShortenedUrlId")
+                    b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
@@ -44,7 +47,7 @@ namespace UrlShortener.Infrastructure.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)");
 
-                    b.HasKey("ShortenedUrlId");
+                    b.HasKey("Id");
 
                     b.HasIndex("CreatedAt");
 

@@ -15,12 +15,15 @@ public class GetAllUrlsQueryHandler: IQueryHandler<GetAllUrlsQuery, IEnumerable<
     }
     public async Task<Result<IEnumerable<GetUrlDto>>> Handle(GetAllUrlsQuery request, CancellationToken cancellationToken)
     {
-        var query = """
-                        SELECT urls."Id", urls."OriginalUrl", urls."ShortCode", urls."CreatedAt", users."Email_Value" AS "CreatorEmail"
-                        FROM public."ShortenedUrls" AS urls
-                        JOIN public."Users" AS users ON urls."CreatorId" = users."UserId"
-                        WHERE urls."CreatorId" = @UserId;
-                    """;
+        const string query = """
+                             SELECT "ShortenedUrlId",
+                               "OriginalUrl",
+                               "ShortCode",
+                               "CreatedAt"
+                             FROM public."ShortenedUrls"
+                             """;
+
+
 
         var reader = await _db.QueryMultipleAsync(query);
         var result = await reader.ReadAsync<GetUrlDto>();

@@ -9,12 +9,12 @@ public class UrlConfiguration : IEntityTypeConfiguration<ShortenedUrl>
 {
     public void Configure(EntityTypeBuilder<ShortenedUrl> builder)
     {
-        builder.Property(u => u.Id)
+        builder.Property(u => u.ShortenedUrlId)
             .HasConversion(
                 id => id.Value,
                 value => new ShortenedUrlId(value));
 
-        builder.HasKey(u => u.Id);
+        builder.HasKey(u => u.ShortenedUrlId);
 
         builder.Property(u => u.OriginalUrl)
             .IsRequired()

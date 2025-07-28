@@ -6,7 +6,7 @@ namespace UrlShortener.Domain.Entities;
 
 public class ShortenedUrl : AggregateRoot
 {
-    public ShortenedUrlId Id { get; private set; }
+    public ShortenedUrlId ShortenedUrlId { get; private set; }
     public string OriginalUrl { get; private set; } = string.Empty;
     public string ShortCode { get; private set; } = string.Empty;
     public DateTime CreatedAt { get; private set; }
@@ -17,13 +17,13 @@ public class ShortenedUrl : AggregateRoot
     private ShortenedUrl() { }
 
     private ShortenedUrl(
-        ShortenedUrlId id,
+        ShortenedUrlId shortenedUrlId,
         string originalUrl,
         string shortCode,
         UserId creatorId,
         DateTime createdAt)
     {
-        Id = id;
+        ShortenedUrlId = shortenedUrlId;
         OriginalUrl = originalUrl;
         ShortCode = shortCode;
         CreatorId = creatorId;

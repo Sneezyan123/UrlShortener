@@ -110,34 +110,39 @@ namespace UrlShortener.Web.Controllers
 
             return RedirectToAction("Index", "Home");
         }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
-        {
-            await HttpContext.SignOutAsync("CookieAuth");
-            return RedirectToAction("Index", "Home");
-        }
+        
 
         [HttpGet]
         public IActionResult AccessDenied()
         {
             return View();
         }
-        [HttpGet("/api/auth/status")]
+        [HttpGet("status")]
         public IActionResult GetAuthStatus()
         {
             if (User.Identity?.IsAuthenticated == true)
             {
+                var userId = User.FindFirst(ClaimTypes.Name)?.Value;
+                var email = User.FindFirst(ClaimTypes.Email)?.Value;
+                
                 return Ok(new
                 {
-                    IsAuthenticated = true,
-                    UserName = User.Identity.Name,
-                    Email = User.FindFirstValue(ClaimTypes.Email)
+                    isAuthenticated = true,
+                    userId = userId,
+                    email = email,
+                    userName = email
                 });
             }
 
-            return Ok(new { IsAuthenticated = false });
+            return Ok(new { isAuthenticated = false });
+        }
+
+        [HttpPost("logout")]
+        [Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync();
+            return Ok(new { success = true });
         }
     }
 }
