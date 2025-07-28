@@ -1,17 +1,59 @@
-using System;
+using FluentResults;
+using UrlShortener.Domain.Primitives;
 using UrlShortener.Domain.ValueObjects.IDs;
 
-namespace UrlShortener.Domain.Entities
+namespace UrlShortener.Domain.Entities;
+
+public class ShortenedUrl : AggregateRoot
 {
-    public class ShortenedUrl
+    public ShortenedUrlId Id { get; private set; }
+    public string OriginalUrl { get; private set; } = string.Empty;
+    public string ShortCode { get; private set; } = string.Empty;
+    public DateTime CreatedAt { get; private set; }
+    
+    public User Creator { get; private set; }
+    public UserId CreatorId { get; private set; }
+
+    private ShortenedUrl() { }
+
+    private ShortenedUrl(
+        ShortenedUrlId id,
+        string originalUrl,
+        string shortCode,
+        UserId creatorId,
+        DateTime createdAt)
     {
-        public ShortenedUrlId Id { get; set; }
-        public string OriginalUrl { get; set; } = string.Empty;
-        public string ShortUrl { get; set; } = string.Empty;
-        public DateTime CreatedDate { get; set; }
-        
-        public User Creator { get; set; }
-        
-        public UserId CreatorId { get; set; }
+        Id = id;
+        OriginalUrl = originalUrl;
+        ShortCode = shortCode;
+        CreatorId = creatorId;
+        CreatedAt = createdAt;
+    }
+
+    public static Result<ShortenedUrl> Create(
+        ShortenedUrlId id,
+        string originalUrl,
+        string shortCode,
+        UserId creatorId,
+        DateTime createdAt)
+    {
+        if (string.IsNullOrWhiteSpace(originalUrl))
+        {
+            return Result.Fail("Original URL cannot be empty");
+        }
+
+        if (string.IsNullOrWhiteSpace(shortCode))
+        {
+            return Result.Fail("Short code cannot be empty");
+        }
+
+        if (!Uri.TryCreate(originalUrl, UriKind.Absolute, out var uriResult) ||
+            (uriResult.Scheme != Uri.UriSchemeHttp && uriResult.Scheme != Uri.UriSchemeHttps))
+        {
+            return Result.Fail("Invalid URL format");
+        }
+
+        var shortenedUrl = new ShortenedUrl(id, originalUrl, shortCode, creatorId, createdAt);
+        return Result.Ok(shortenedUrl);
     }
 }

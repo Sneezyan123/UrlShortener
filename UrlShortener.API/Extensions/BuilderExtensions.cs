@@ -1,3 +1,4 @@
+using System.Data;
 using System.Reflection;
 using System.Text;
 using FluentValidation;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Npgsql;
 using UrlShortener.Applicationm;
 using UrlShortener.Applicationm.Abstractions;
 using UrlShortener.Applicationm.Pipeline;
@@ -93,6 +95,13 @@ public static class BuilderExtensions
         {
             options.UseNpgsql(builder.Configuration.GetConnectionString("DbConnect"));
         });
+        return builder;
+    }
+    public static WebApplicationBuilder AddDapper(this WebApplicationBuilder builder)
+    {
+        builder.Services
+            .AddTransient<IDbConnection>(sp =>
+                new NpgsqlConnection(builder.Configuration.GetConnectionString("DbConnect")));
         return builder;
     }
 }
