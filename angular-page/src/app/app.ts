@@ -53,6 +53,14 @@ export class App {
       });
   }
 
+  navigateToHome() {
+    window.location.href = '/home/index';
+  }
+
+  navigateToAbout() {
+    window.location.href = '/home/about';
+  }
+
   onSignIn() {
     window.location.href = '/user/login';
   }

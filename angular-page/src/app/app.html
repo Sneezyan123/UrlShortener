@@ -1,4 +1,8 @@
 <header class="header">
+  <div class="nav-buttons">
+    <button class="btn btn-nav" (click)="navigateToHome()">Home</button>
+    <button class="btn btn-nav" (click)="navigateToAbout()">About</button>
+  </div>
   <div class="auth-buttons">
     <button class="btn btn-outline" (click)="onSignIn()">Sign In</button>
     <button class="btn btn-primary" (click)="onSignUp()">Sign Up</button>
@@ -43,10 +47,16 @@
 
   .header {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
     padding: 1rem 2rem;
     background-color: white;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .nav-buttons {
+    display: flex;
+    gap: 1rem;
   }
 
   .auth-buttons {
@@ -68,10 +78,30 @@
     color: white;
   }
 
+  .btn-primary:hover {
+    background-color: #2980b9;
+  }
+
   .btn-outline {
     background-color: transparent;
     border: 1px solid #3498db;
     color: #3498db;
+  }
+
+  .btn-outline:hover {
+    background-color: #3498db;
+    color: white;
+  }
+
+  .btn-nav {
+    background-color: transparent;
+    color: #2c3e50;
+    border: 1px solid transparent;
+  }
+
+  .btn-nav:hover {
+    background-color: #ecf0f1;
+    border-color: #bdc3c7;
   }
 
   .main-content {
@@ -92,6 +122,11 @@
     border: 2px solid #e0e0e0;
     border-radius: 4px;
     font-size: 1rem;
+  }
+
+  .url-input:focus {
+    outline: none;
+    border-color: #3498db;
   }
 
   .history-section {
@@ -134,9 +169,17 @@
     white-space: nowrap;
   }
 
+  .original-url:hover {
+    text-decoration: underline;
+  }
+
   .shortened-url {
     color: #3498db;
     text-decoration: none;
     font-weight: 500;
+  }
+
+  .shortened-url:hover {
+    text-decoration: underline;
   }
 </style>

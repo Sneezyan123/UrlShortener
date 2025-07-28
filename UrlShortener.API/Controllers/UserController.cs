@@ -21,10 +21,28 @@ namespace UrlShortener.Web.Controllers
             _sender = sender;
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Register()
+        {
+            if (User.Identity?.IsAuthenticated ?? false)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View(new CreateUserCommandRequest());
+        }
+
         [HttpPost]
         [AllowAnonymous]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(CreateUserCommandRequest request)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(request);
+            }
+
             var command = new CreateUserCommand(request.Email, request.Password);
             var result = await _sender.Send(command);
             
@@ -34,6 +52,7 @@ namespace UrlShortener.Web.Controllers
                 return View(request);
             }
 
+            TempData["SuccessMessage"] = "Registration successful! Please log in.";
             return RedirectToAction(nameof(Login));
         }
         

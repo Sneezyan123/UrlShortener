@@ -1,5 +1,9 @@
 @model UrlShortener.Applicationm.Users.Commands.CreateUserCommand.CreateUserCommandRequest
 
+@{
+    ViewData["Title"] = "Register";
+}
+
 <div class="row">
     <div class="col-md-4 offset-md-4">
         <h2>Register</h2>
@@ -18,8 +22,14 @@
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
             
-            <button type="submit" class="btn btn-primary">Register</button>
-            <a asp-action="Login" class="btn btn-link">Back to Login</a>
+            <div class="form-group mt-3">
+                <button type="submit" class="btn btn-primary">Register</button>
+                <a asp-action="Login" class="btn btn-link">Already have an account? Login</a>
+            </div>
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
