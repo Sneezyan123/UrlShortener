@@ -29,7 +29,6 @@ namespace UrlShortener.Web.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-
             return View(new CreateUserCommandRequest());
         }
 
@@ -52,6 +51,7 @@ namespace UrlShortener.Web.Controllers
                 return View(request);
             }
 
+            // Optionally auto-login after registration
             TempData["SuccessMessage"] = "Registration successful! Please log in.";
             return RedirectToAction(nameof(Login));
         }
@@ -64,6 +64,7 @@ namespace UrlShortener.Web.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+            
             var viewModel = new LoginViewModel
             {
                 ReturnUrl = returnUrl
@@ -92,12 +93,18 @@ namespace UrlShortener.Web.Controllers
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, result.Value.Value.ToString()),
-                new Claim(ClaimTypes.Name, model.Username)
+                new Claim(ClaimTypes.Name, model.Username),
+                new Claim(ClaimTypes.Email, model.Username) // Assuming username is email
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, "CookieAuth");
-            await HttpContext.SignInAsync("CookieAuth", new ClaimsPrincipal(claimsIdentity),
-                new AuthenticationProperties { IsPersistent = model.RememberMe });
+            var authProperties = new AuthenticationProperties 
+            { 
+                IsPersistent = model.RememberMe,
+                ExpiresUtc = model.RememberMe ? DateTimeOffset.UtcNow.AddDays(30) : DateTimeOffset.UtcNow.AddMinutes(30)
+            };
+
+            await HttpContext.SignInAsync("CookieAuth", new ClaimsPrincipal(claimsIdentity), authProperties);
 
             if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
                 return Redirect(model.ReturnUrl);

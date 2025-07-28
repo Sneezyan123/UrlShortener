@@ -1,0 +1,76 @@
+<header class="header">
+  <div class="nav-buttons">
+    <button class="btn btn-nav" (click)="navigateToHome()">Home</button>
+    <button class="btn btn-nav" (click)="navigateToAbout()">About</button>
+  </div>
+  <div class="auth-buttons">
+    <button class="btn btn-outline" (click)="onSignIn()">Sign In</button>
+    <button class="btn btn-primary" (click)="onSignUp()">Sign Up</button>
+  </div>
+</header>
+
+<main class="main-content">
+  <!-- Error Message -->
+  @if (errorMessage) {
+    <div class="error-message">
+      <span>{{ errorMessage }}</span>
+      <button class="close-btn" (click)="clearError()">×</button>
+    </div>
+  }
+
+  <!-- URL Input Section -->
+  <div class="url-input-container">
+    <input 
+      type="text" 
+      class="url-input" 
+      placeholder="Enter your URL here..."
+      [(ngModel)]="urlToShorten"
+      (keyup.enter)="shortenUrl()"
+      [disabled]="isLoading"
+    >
+    <button 
+      class="btn btn-primary" 
+      (click)="shortenUrl()"
+      [disabled]="isLoading || !urlToShorten.trim()"
+    >
+      @if (isLoading) {
+        <span class="loading-spinner"></span>
+      }
+      {{ isLoading ? 'Shortening...' : 'Shorten URL' }}
+    </button>
+  </div>
+
+  <!-- History Section -->
+  <section class="history-section">
+    <div class="history-header">
+      <h2 class="history-title">Recently Shortened URLs</h2>
+      @if (isLoading && !shortenedUrls.length) {
+        <div class="loading-indicator">Loading...</div>
+      }
+    </div>
+    
+    @if (shortenedUrls.length > 0) {
+      <ul class="history-list">
+        @for (item of shortenedUrls; track item.id) {
+          <li class="history-item">
+            <div class="url-info">
+              <a [href]="item.originalUrl" class="original-url" target="_blank" rel="noopener noreferrer">
+                {{ item.originalUrl }}
+              </a>
+              <small class="created-date">
+                Created: {{ item.createdAt | date:'short' }}
+              </small>
+            </div>
+            <a [href]="item.shortUrl" class="shortened-url" target="_blank" rel="noopener noreferrer">
+              {{ item.shortUrl }}
+            </a>
+          </li>
+        }
+      </ul>
+    } @else if (!isLoading) {
+      <div class="empty-state">
+        <p>No shortened URLs yet. Create your first one above!</p>
+      </div>
+    }
+  </section>
+</main>

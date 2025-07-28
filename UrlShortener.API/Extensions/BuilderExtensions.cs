@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Text;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -35,39 +36,57 @@ public static class BuilderExtensions
         builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         return builder;
     }
+    
     public static WebApplicationBuilder AddExceptionHandlers(this WebApplicationBuilder builder)
     {
         builder.Services.AddProblemDetails();
         builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
         return builder;
     }
+    
     public static WebApplicationBuilder AddConfiguration(this WebApplicationBuilder builder)
     {
         builder.Services
             .Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
         return builder;
     }
+    
     public static WebApplicationBuilder AddAuth(this WebApplicationBuilder builder)
     {
         var jwtOptions = new JwtOptions();
         var jwtOptionsConfig = builder.Configuration.GetSection("JwtOptions");
         jwtOptionsConfig.Bind(jwtOptions);
 
-        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+        builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = "CookieAuth";
+            options.DefaultChallengeScheme = "CookieAuth";
+            options.DefaultSignInScheme = "CookieAuth";
+        })
+        .AddCookie("CookieAuth", options =>
+        {
+            options.LoginPath = "/User/Login";
+            options.LogoutPath = "/User/Logout";
+            options.AccessDeniedPath = "/User/AccessDenied";
+            options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+            options.SlidingExpiration = true;
+        })
+        .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
             {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateAudience = false,
-                    ValidateIssuer = false,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey))
-                };
-            });
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey))
+            };
+        });
+        
         builder.Services.AddAuthorization();
         return builder;
     }
+    
     public static WebApplicationBuilder AddEfCoreDatabase(this WebApplicationBuilder builder)
     {
         builder.Services.AddDbContext<ApiDbContext>(options =>
