@@ -58,7 +58,7 @@
   @if (!currentUser.isAuthenticated) {
     <div class="auth-notice">
       <p>
-        <strong>Sign in required:</strong> 
+        <strong>Want to create your own shortened URLs?</strong> 
         You need to <a href="/user/login" class="auth-link">sign in</a> to shorten URLs. 
         Don't have an account? <a href="/user/register" class="auth-link">Register here</a>.
       </p>
@@ -72,11 +72,11 @@
         @if (currentUser.isAuthenticated) {
           Your Shortened URLs
         } @else {
-          Recently Shortened URLs
+          Recent Shortened URLs
         }
       </h2>
-      @if (isLoading && !shortenedUrls.length) {
-        <div class="loading-indicator">Loading...</div>
+      @if (isLoadingHistory) {
+        <div class="loading-indicator">Loading history...</div>
       }
     </div>
     
@@ -107,12 +107,12 @@
           </li>
         }
       </ul>
-    } @else if (!isLoading) {
+    } @else if (!isLoadingHistory) {
       <div class="empty-state">
         @if (currentUser.isAuthenticated) {
           <p>No shortened URLs yet. Create your first one above!</p>
         } @else {
-          <p>Sign in to see your shortened URLs or view recent public URLs.</p>
+          <p>No recent URLs available. Sign in to create your own shortened URLs!</p>
         }
       </div>
     }
