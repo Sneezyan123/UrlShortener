@@ -4,29 +4,41 @@ using FluentResults;
 using UrlShortener.Applicationm.Abstractions.Messages;
 using UrlShortener.Applicationm.Urls.Dtos;
 
-namespace UrlShortener.Applicationm.Urls.Queries.GetAllUrlsQuery;
-
-public class GetAllUrlsQueryHandler: IQueryHandler<GetAllUrlsQuery, IEnumerable<GetUrlDto>>
+namespace UrlShortener.Applicationm.Urls.Queries.GetAllUrlsQuery
 {
-    private readonly IDbConnection _db;
-    public GetAllUrlsQueryHandler(IDbConnection db)
+    public class GetAllUrlsQueryHandler : IQueryHandler<GetAllUrlsQuery, IEnumerable<GetUrlDto>>
     {
-        _db = db;
-    }
-    public async Task<Result<IEnumerable<GetUrlDto>>> Handle(GetAllUrlsQuery request, CancellationToken cancellationToken)
-    {
-        const string query = """
-                             SELECT "ShortenedUrlId",
-                               "OriginalUrl",
-                               "ShortCode",
-                               "CreatedAt"
-                             FROM public."ShortenedUrls"
-                             """;
+        private readonly IDbConnection _db;
 
+        public GetAllUrlsQueryHandler(IDbConnection db)
+        {
+            _db = db;
+        }
 
+        public async Task<Result<IEnumerable<GetUrlDto>>> Handle(GetAllUrlsQuery request, CancellationToken cancellationToken)
+        {
+            const string query = """
+                                 SELECT 
+                                     su."ShortenedUrlId" as Id,
+                                     su."OriginalUrl",
+                                     su."ShortCode",
+                                     su."CreatedAt",
+                                     u."Email_Value" as CreatorEmail
+                                 FROM "ShortenedUrls" su
+                                 LEFT JOIN "Users" u ON su."CreatorId" = u."UserId"
+                                 ORDER BY su."CreatedAt" DESC
+                                 LIMIT 50
+                                 """;
 
-        var reader = await _db.QueryMultipleAsync(query);
-        var result = await reader.ReadAsync<GetUrlDto>();
-        return Result.Ok(result);
+            try
+            {
+                var result = await _db.QueryAsync<GetUrlDto>(query);
+                return Result.Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return Result.Fail($"Database error: {ex.Message}");
+            }
+        }
     }
 }

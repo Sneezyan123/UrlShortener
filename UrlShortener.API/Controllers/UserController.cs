@@ -118,11 +118,12 @@ namespace UrlShortener.Web.Controllers
             return View();
         }
 
-        // API endpoint для перевірки статусу авторизації (для Angular)
         [HttpGet("user/status")]
         [AllowAnonymous]
         public IActionResult GetAuthStatus()
         {
+            var cookies = Request.Cookies.Select(c => new { Name = c.Key, Value = c.Value }).ToList();
+            
             if (User.Identity?.IsAuthenticated == true)
             {
                 var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -134,38 +135,52 @@ namespace UrlShortener.Web.Controllers
                     isAuthenticated = true,
                     userId = userId,
                     userName = userName ?? email,
-                    email = email
+                    email = email,
+                    cookies = cookies
                 });
             }
 
-            return Ok(new { isAuthenticated = false });
+            return Ok(new { 
+                isAuthenticated = false,
+                cookies = cookies
+            });
         }
 
-        // API endpoint для logout (для Angular)
         [HttpPost("user/logout")]
         [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync("CookieAuth");
+            await HttpContext.SignOutAsync("CookieAuth", new AuthenticationProperties
+            {
+                IsPersistent = false,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(-1),
+                RedirectUri = null
+            });
             
-            // Якщо це AJAX запит, повертаємо JSON
+            Response.Cookies.Delete(".AspNetCore.Cookies");
+            
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest" || 
                 Request.Headers["Content-Type"].ToString().Contains("application/json"))
             {
                 return Ok(new { success = true });
             }
             
-            // Якщо це звичайний POST запит, робимо редирект
             return RedirectToAction("Index", "Home");
         }
 
-        // Альтернативний GET endpoint для logout (для звичайних посилань)
         [HttpGet("user/logout")]
         [Authorize] 
         public async Task<IActionResult> LogoutGet()
         {
-            await HttpContext.SignOutAsync("CookieAuth");
+            await HttpContext.SignOutAsync("CookieAuth", new AuthenticationProperties
+            {
+                IsPersistent = false,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(-1),
+                RedirectUri = null
+            });
+            
+            Response.Cookies.Delete(".AspNetCore.Cookies");
             return RedirectToAction("Index", "Home");
         }
     }

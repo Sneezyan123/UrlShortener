@@ -26,17 +26,17 @@ public static class BuilderExtensions
     public static WebApplicationBuilder AddServices(this WebApplicationBuilder builder)
     {
         builder.Services.AddMediatR(cfg =>
-            {
-                cfg.RegisterServicesFromAssembly(AssemblyApplicationReference.Assembly);
-                cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
-            }
-        );
+        {
+            cfg.RegisterServicesFromAssembly(AssemblyApplicationReference.Assembly);
+            cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+        });
+        
         builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<IShortenedUrlRepository, ShortenedUrlRepository>();
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
         builder.Services.AddValidatorsFromAssembly(AssemblyInfrastructureReference.Assembly);
-        builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        
         return builder;
     }
     
@@ -49,16 +49,14 @@ public static class BuilderExtensions
     
     public static WebApplicationBuilder AddConfiguration(this WebApplicationBuilder builder)
     {
-        builder.Services
-            .Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
+        builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
         return builder;
     }
     
     public static WebApplicationBuilder AddAuth(this WebApplicationBuilder builder)
     {
         var jwtOptions = new JwtOptions();
-        var jwtOptionsConfig = builder.Configuration.GetSection("JwtOptions");
-        jwtOptionsConfig.Bind(jwtOptions);
+        builder.Configuration.GetSection("JwtOptions").Bind(jwtOptions);
 
         builder.Services.AddAuthentication(options =>
         {
@@ -73,6 +71,10 @@ public static class BuilderExtensions
             options.AccessDeniedPath = "/User/AccessDenied";
             options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
             options.SlidingExpiration = true;
+            options.Cookie.Name = ".AspNetCore.Cookies";
+            options.Cookie.HttpOnly = true;
+            options.Cookie.SameSite = SameSiteMode.Strict;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
         })
         .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
         {
@@ -93,16 +95,26 @@ public static class BuilderExtensions
     public static WebApplicationBuilder AddEfCoreDatabase(this WebApplicationBuilder builder)
     {
         builder.Services.AddDbContext<ApiDbContext>(options =>
-        {
-            options.UseNpgsql(builder.Configuration.GetConnectionString("DbConnect"));
-        });
+            options.UseNpgsql(builder.Configuration.GetConnectionString("DbConnect")));
         return builder;
     }
+    
     public static WebApplicationBuilder AddDapper(this WebApplicationBuilder builder)
     {
-        builder.Services
-            .AddTransient<IDbConnection>(sp =>
-                new NpgsqlConnection(builder.Configuration.GetConnectionString("DbConnect")));
+        builder.Services.AddTransient<IDbConnection>(sp =>
+            new NpgsqlConnection(builder.Configuration.GetConnectionString("DbConnect")));
         return builder;
     }
+}
+
+public static class WebApplicationExtensions
+{
+    public static WebApplication MapStaticAssets(this WebApplication app)
+    {
+        app.UseStaticFiles();
+        app.MapFallbackToFile("angular-page/index.html");
+        return app;
+    }
+    
+    public static IEndpointRouteBuilder WithStaticAssets(this IEndpointRouteBuilder endpoints) => endpoints;
 }

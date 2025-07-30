@@ -1,6 +1,6 @@
 namespace UrlShortener.Applicationm.Urls.Commands.ShortenUrlCommand;
 
-public class ShortenUrlCommandRequest
+public class ShortenUrlRequest
 {
-    public string OriginalUrl { get; set; }
+    public string OriginalUrl { get; set; } = string.Empty;
 }
