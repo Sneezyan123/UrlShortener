@@ -117,32 +117,56 @@ namespace UrlShortener.Web.Controllers
         {
             return View();
         }
-        [HttpGet("status")]
+
+        // API endpoint для перевірки статусу авторизації (для Angular)
+        [HttpGet("user/status")]
+        [AllowAnonymous]
         public IActionResult GetAuthStatus()
         {
             if (User.Identity?.IsAuthenticated == true)
             {
-                var userId = User.FindFirst(ClaimTypes.Name)?.Value;
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var userName = User.FindFirst(ClaimTypes.Name)?.Value;
                 var email = User.FindFirst(ClaimTypes.Email)?.Value;
                 
                 return Ok(new
                 {
                     isAuthenticated = true,
                     userId = userId,
-                    email = email,
-                    userName = email
+                    userName = userName ?? email,
+                    email = email
                 });
             }
 
             return Ok(new { isAuthenticated = false });
         }
 
-        [HttpPost("logout")]
+        // API endpoint для logout (для Angular)
+        [HttpPost("user/logout")]
         [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync();
-            return Ok(new { success = true });
+            await HttpContext.SignOutAsync("CookieAuth");
+            
+            // Якщо це AJAX запит, повертаємо JSON
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest" || 
+                Request.Headers["Content-Type"].ToString().Contains("application/json"))
+            {
+                return Ok(new { success = true });
+            }
+            
+            // Якщо це звичайний POST запит, робимо редирект
+            return RedirectToAction("Index", "Home");
+        }
+
+        // Альтернативний GET endpoint для logout (для звичайних посилань)
+        [HttpGet("user/logout")]
+        [Authorize] 
+        public async Task<IActionResult> LogoutGet()
+        {
+            await HttpContext.SignOutAsync("CookieAuth");
+            return RedirectToAction("Index", "Home");
         }
     }
 }

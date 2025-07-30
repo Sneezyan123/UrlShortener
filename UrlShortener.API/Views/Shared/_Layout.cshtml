@@ -1,9 +1,28 @@
-﻿<!DOCTYPE html>
+﻿@using UrlShortener.Extensions
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>@ViewData["Title"] - UrlShortener.API</title>
+    
+    <!-- Додаємо meta теги для Angular -->
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <meta name="is-authenticated" content="true" />
+        <meta name="user-id" content="@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value" />
+        <meta name="user-email" content="@User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value" />
+        <meta name="user-name" content="@User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value" />
+    }
+    else
+    {
+        <meta name="is-authenticated" content="false" />
+    }
+    
+    <!-- CSRF токен для Angular -->
+    @Html.AntiForgeryToken()
+    <meta name="__RequestVerificationToken" content="@Html.GetAntiforgeryToken()" />
+    
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
@@ -34,10 +53,17 @@
                     @if (User.Identity?.IsAuthenticated == true)
                     {
                         <li class="nav-item">
-                            <span class="navbar-text me-3">Welcome, @User.Identity.Name!</span>
+                            <span class="navbar-text me-3 welcome-text" 
+                                  data-user-authenticated="true"
+                                  data-user-id="@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value"
+                                  data-user-email="@User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value"
+                                  data-user-name="@User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value">
+                                Welcome, @User.Identity.Name!
+                            </span>
                         </li>
                         <li class="nav-item">
                             <form asp-controller="User" asp-action="Logout" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
                                 <button type="submit" class="btn btn-outline-secondary">Logout</button>
                             </form>
                         </li>
