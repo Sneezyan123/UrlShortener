@@ -24,10 +24,6 @@ public class HomeController : Controller
             "text/html");
     }
 
-    public IActionResult Privacy()
-    {
-        return View();
-    }
 
     public IActionResult About()
     {
